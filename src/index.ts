@@ -41,7 +41,6 @@ app.get('/', (c) => {
 
 app.get('/automatic', (c) => {
   const url = c.req.query('url');
-  console.log(url);
 
   if (!url) {
     return c.text('Please provide a URL');
