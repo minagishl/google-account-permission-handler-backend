@@ -1,10 +1,18 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
 
-const app = new Hono<{ Bindings: CloudflareBindings }>()
+const app = new Hono<{ Bindings: CloudflareBindings }>();
 
 function checkUrl(url: string): boolean {
-  const urlPattern = /^https:\/\/.*\.google\.com\/.+$/;
-  return urlPattern.test(url);
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname;
+    return (
+      parsedUrl.protocol === 'https:' &&
+      (hostname === 'google.com' || hostname.endsWith('.google.com'))
+    );
+  } catch {
+    return false;
+  }
 }
 
 function toViewUrl(url: string): string {
@@ -28,8 +36,8 @@ function generateViewUrl(id: string): string {
 }
 
 app.get('/', (c) => {
-    return c.text('Hello Hono!')
-})
+  return c.text('Hello Hono!');
+});
 
 app.get('/automatic', (c) => {
   const url = c.req.query('url');
@@ -45,7 +53,7 @@ app.get('/automatic', (c) => {
 
   const newUrl = toViewUrl(url);
   return c.redirect(newUrl);
-})
+});
 
 app.get('/chooser', (c) => {
   const url = c.req.query('url');
@@ -61,6 +69,6 @@ app.get('/chooser', (c) => {
   const encodedUrl = encodeURIComponent(toViewUrl(url));
   const newUrl = `https://accounts.google.com/AccountChooser?continue=${encodedUrl}`;
   return c.redirect(newUrl);
-})
+});
 
-export default app
+export default app;
