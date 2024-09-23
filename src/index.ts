@@ -28,7 +28,11 @@ function toViewUrl(url: string): string {
     return generateViewUrl(id);
   }
 
-  return url;
+  const newURL = new URL(url);
+  newURL.searchParams.delete('authuser');
+  newURL.searchParams.delete('pli');
+
+  return newURL.toString();
 }
 
 function generateViewUrl(id: string): string {
